@@ -1,0 +1,816 @@
+
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr 11 00:24:25 2025
+
+@author: angel
+"""
+#%%
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+from scipy.stats import linregress
+import csv
+import pandas as pd
+import mplcursors
+
+#%%
+
+### FULL MERCURY SPECTRUM
+
+# Read in the CSV file
+df1 = pd.read_csv("Mercury_Spectrum (atmp 2).csv")
+
+# Plot the first two columns
+time = df1['Latest: Time (s)']
+voltage = df1['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*15 + 3794)*2/3, voltage, label='Mercury', color='blue', marker ='.') #converted time to angstroms
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Full Mercury Spectrum')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+#%%
+
+
+### MERCURY CALIBRATION 
+experimental = np.array([3668.08, 4073.39, 4392.22, 5519.52])
+literature = np.array([3662.9, 4077.8, 4358.4, 5460.7])
+
+# plt.figure()
+# plt.scatter(literature, experimental, label = 'comparisons')
+# plt.xlabel('experimental points')
+# plt.ylabel('literature points')
+# plt.title('Peak Position Comparisons')
+# plt.show()
+
+coeffs = np.polyfit(literature, experimental, 1)
+fit_fn = np.poly1d(coeffs)
+
+# Generate fit line values
+x_fit = np.linspace(min(literature), max(literature), 100)
+y_fit = fit_fn(x_fit)
+
+# Plot
+plt.figure()
+plt.scatter(literature, experimental, label='Data Points')
+plt.plot(x_fit, y_fit, 'r--', label=f'Fit: y = {coeffs[0]:.4f}x + {coeffs[1]:.2f}')
+plt.xlabel('Literature Wavelength (Å)')
+plt.ylabel('Experimental Wavelength (Å)')
+plt.title('Peak Position Comparisons')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+print("slope =", coeffs[0])
+
+
+#%%
+### FULL HD SPECTRUM
+df2 = pd.read_csv("HD trial 3.csv")
+
+time = df2['Latest: Time (s)']
+voltage = df2['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*15 + 5458.4)*(2/3), voltage, label='HD', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Full HD Spectrum')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+#%%
+
+###LAST PEAK HD
+
+df3 = pd.read_csv("Last_Peak(HD).csv")
+
+time = df3['Latest: Time (s)']
+voltage = df3['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*5/6 + 9834.2)*2/3, voltage, label='HD', color='blue', marker ='.') #Speed of 50A/min
+plt.axvline(x=6562.0, color='black', linestyle='--', label = 'D-peak=6562.0Å')
+plt.axvline(x=6563.6, color='gold', linestyle='--', label = "H-peak=6563.6Å")
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Last_Peak(HD) @ 6562.8Å with Range[6556-6572]Å')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+
+
+#%%
+
+df4 = pd.read_csv("Third_Peak(HD - atmp3).csv")
+
+time = df4['Latest: Time (s)']
+voltage = df4['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*25/60 +7282)*2/3, voltage, label='HD', color='blue', marker ='.') #speed of 25A/min
+plt.axvline(x=4857.53, color='black', linestyle='--', label = 'D-peak=4857.53Å')
+plt.axvline(x=4858.62, color='gold', linestyle='--', label = "H-peak=4858.62Å")
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Third_Peak(HD)  @ 4861.3Å with Range[4854-4868]Å')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+#%% ##Bad Second Peak(HD)
+# df5 = pd.read_csv("Second_Peak(HD).csv")
+
+# time = df5['Latest: Time (s)']
+# voltage = df5['Latest: Potential 1 (V)']
+
+# plt.figure()
+# plt.scatter(time, voltage, label='HD', color='blue', marker ='.')
+# plt.xlabel('Time (s)')
+# plt.ylabel('Potential (V)')
+# plt.title('Second_Peak(HD)')
+# plt.grid(True)
+# plt.legend()
+# plt.show()
+
+
+#%%
+
+df6 = pd.read_csv("First_Peak(HD) - better.csv")
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter(time, voltage, label='HD', color='blue', marker ='.')
+plt.xlabel('Time (s)')
+plt.ylabel('Potential (V)')
+plt.title('First_Peak(HD)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+#%%  Third Peak attempt
+
+
+# df6 = pd.read_csv("Third_Peak(HD - atmp2).csv")
+
+# time = df6['Latest: Time (s)']
+# voltage = df6['Latest: Potential 1 (V)']
+
+# plt.figure()
+# plt.scatter(time, voltage, label='HD', color='blue', marker ='.')
+# plt.xlabel('Time (s)')
+# plt.ylabel('Potential (V)')
+# plt.title('3rd?_Peak(HD)')
+# plt.grid(True)
+# plt.legend()
+# plt.show()
+
+
+
+
+
+#%%
+
+
+# df6 = pd.read_csv("Second_Peak(HD - atmp 2).csv") ##This i=one is not that good I took it at 25A/min
+
+# time = df6['Latest: Time (s)']
+# voltage = df6['Latest: Potential 1 (V)']
+
+# plt.figure()
+# plt.scatter(time, voltage, label='HD', color='blue', marker ='.')
+# plt.xlabel('Time (s)')
+# plt.ylabel('Potential (V)')
+# plt.title('2nd?_Peak(HD)')
+# plt.grid(True)
+# plt.legend()
+# plt.show()
+
+
+#%%
+
+df6 = pd.read_csv("Second_Peak(HD - atmp 3).csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*1/6 + 6500)*(2/3), voltage, label='HD', color='blue', marker ='.')
+plt.axvline(x=4335.5, color='black', linestyle='--', label = 'D-peak=4335.5Å')
+plt.axvline(x=4336.5, color='gold', linestyle='--', label = "H-peak=4336.5Å")
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Second_Peak(HD)  @ 4340.5Å with Range[4333-4340]Å')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+#%%
+
+df6 = pd.read_csv("First_Peak(HD - atmp 2).csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*1/6 + 6138)*2/3, voltage, label='HD', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('1st?_Peak(HD)')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+#%%
+
+df6 = pd.read_csv("First_Peak(HD - atmp 3).csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+plt.scatter((time*1/6 + 6138)*2/3, voltage, label='HD', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('1st?_Peak(HD) AGAINN')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+#%%
+
+df6 = pd.read_csv("Sodium Spectrum_2.csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+scatter = plt.scatter((time*15 + 3859)*2/3, voltage, label='sodium', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Whole Sodium Spectrum_2')
+plt.grid(True)
+plt.legend()
+plt.show() 
+
+
+#%%
+
+
+
+
+
+
+
+
+lamda_inv = np.array([6561.9, 4858.62, 4336.5, 4094.29])**-1
+n = np.array([3.0,4.0,5.0,6.0])**-2
+
+x = 1/4-n
+
+#lamda_inv = np.array([4094.29, 4336.5, 4858.62, 6561.9])**-1
+#j = np.array([6.0,5.0,4.0,3.0])**-2
+
+
+coeffs = np.polyfit(x, lamda_inv, 1)
+fit_fn = np.poly1d(coeffs)
+
+# Generate fit line values
+x_fit = np.linspace(min(x), max(x), 100)
+y_fit = fit_fn(x_fit)
+
+# Plot
+plt.figure()
+plt.scatter(x, lamda_inv, label = 'data ')
+plt.plot(x_fit, y_fit, 'r--', label=f'Fit: y = {coeffs[0]:.4f}x + {coeffs[1]:.2f}')
+plt.xlabel("$j^{-2}$")
+plt.ylabel("$\lambda^{-1}$")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+Rydberg = coeffs[0]
+print("Rydberg Constant is R =", Rydberg)
+
+
+#%%
+
+### FINDING RYDBERG CONSTANT (HYDROGEN)
+
+# Data
+wavelengths_angstrom = np.array([6563.6, 4858.62, 4336.5, 4094.29]) #Hydrogen Wavelengths from Balmer Lines
+n_values = np.array([3, 4, 5, 6])
+
+# Convert to m⁻¹
+wavelengths_m = wavelengths_angstrom * 1e-10
+inv_lambda = 1 / wavelengths_m
+
+# Compute x = 1/4 - 1/n²
+x_vals = 1/4 - 1/(n_values**2)
+
+# Fit a line: inv_lambda = R * x
+slope, intercept = np.polyfit(x_vals, inv_lambda, 1)
+
+# Rydberg constant is the slope
+R_measured_H = slope
+
+# Plotting
+plt.figure()
+plt.scatter(x_vals, inv_lambda, label='Data')
+plt.plot(x_vals, slope * x_vals + intercept, 'r--', label= f'Fit: R = {slope:.2f} m⁻¹')
+plt.xlabel(r'$1/4 - 1/j^2$')
+plt.ylabel(r'$1/\lambda$ (m$^{-1}$)')
+plt.title('Determining the Rydberg Constant from Hydrogen Spectrum')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print(f"Calculated Rydberg constant(Hydrogen): {R_measured_H:.2f} m⁻¹")
+
+#%%
+
+### FINDING RYDBERG CONSTANT (DEUTERIUM)
+
+# Data
+wavelengths_angstrom = np.array([6561.9, 4857.53, 4335.5, 4093.0]) #Deuterium  Wavelengths from Balmer Lines
+n_values = np.array([3, 4, 5, 6])
+
+# Convert to m⁻¹
+wavelengths_m = wavelengths_angstrom * 1e-10
+inv_lambda = 1 / wavelengths_m
+
+# Compute x = 1/4 - 1/n²
+x_vals = 1/4 - 1/(n_values**2)
+
+# Fit a line: inv_lambda = R * x
+slope, intercept = np.polyfit(x_vals, inv_lambda, 1)
+
+# Rydberg constant is the slope
+R_measured_D = slope
+
+# Plotting
+plt.figure()
+plt.scatter(x_vals, inv_lambda, label='Data')
+plt.plot(x_vals, slope * x_vals + intercept, 'r--', label= f'Fit: R = {slope:.2f} m⁻¹')
+plt.xlabel(r'$1/4 - 1/j^2$')
+plt.ylabel(r'$1/\lambda$ (m$^{-1}$)')
+plt.title('Determining the Rydberg Constant from Deuterium  Spectrum')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+print(f"Calculated Rydberg constant(Deuterium): {R_measured_D:.2f} m⁻¹")
+
+#%%
+
+
+
+
+#%%   ### PART 2: DUETERIUM-HYDROGEN MASS RATIO
+
+
+
+#Last Peak 
+
+lambda_D = 6561.9 #* 1e-10 # in meters
+lambda_H = 6563.6 #* 1e-10 # in meters
+m_e = 9.109 * 1e-31   #in kg
+m_H = 1.672 * 1e-27#   in kg
+
+
+def Mass_ratio(D,H):
+    wavelength = (D - H)/H
+    m = m_e/m_H
+    
+    return ((wavelength/m) + 1)**-1
+
+R4 = Mass_ratio(lambda_D, lambda_H)
+
+
+D3 = 4857.53
+H3 = 4858.62
+R3 = Mass_ratio(D3, H3)
+
+
+D2 = 4335.5
+H2 = 4336.5
+R2 = Mass_ratio(D2, H2)
+
+
+D1 = 4093
+H1 = 4094.29
+R1 = Mass_ratio(D1, H1)
+
+
+Ratio_avg = (R4 + R3 + R2 +R1)/4
+Ratio_std = np.std(np.array([R4, R3, R2, R1]))
+
+print("Avgerage Mass Ratio =", Ratio_avg)
+print("Ratio_unc =", Ratio_std)
+
+#%%   ### QUANTUM DEFECTS OF SODIUM
+
+
+#%%  #Peak Graphs
+
+df6 = pd.read_csv("Sodium_peak6_atmp2.csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+scatter = plt.scatter((time*5/6 + 8750)*2/3, voltage, label='sodium', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Sodium Peak 6')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+#%%
+
+df6 = pd.read_csv("Sodium_peak4_atmp2.csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+scatter = plt.scatter((time*25/60 + 7450)*2/3, voltage, label='sodium', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Sodium Peak 4')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+
+#%%
+
+df6 = pd.read_csv("Sodium_peak5_atmp2(less noise).csv") 
+
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+plt.figure()
+scatter = plt.scatter((time*25/60 + 8500)*2/3, voltage, label='sodium', color='blue', marker ='.')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Sodium Peak 5')
+plt.grid(True)
+plt.legend()
+plt.show()
+
+
+
+#%%   Example 1 (P to S)
+
+# Constants
+Rydberg =  (R_measured_D + R_measured_H)/2 #avg of Hydrogen and Deuterium
+wavelength = (5894.29*1e-10)**-1  #in meters
+#inv_lambda = 1 / lambda_cm
+
+# Solve by testing values
+for mu_S in np.linspace(1.2, 1.5, 10000):
+    for mu_P in np.linspace(0.75, 0.95, 10000):
+        lhs = wavelength
+        rhs = Rydberg * (1 / (3 - mu_S)**2 - 1 / (3 - mu_P)**2)
+        if abs(lhs - rhs) < 0.05:  # small error tolerance
+            print(f"mu_S ≈ {mu_S:.4f}, mu_P ≈ {mu_P:.4f}")
+            
+
+#%%   Example 1 part 2 (D to P)
+
+# Constants
+Rydberg =  (R_measured_D + R_measured_H)/2 #avg of Hydrogen and Deuterium
+wavelength = (4979.05*1e-10)**-1  #in meters
+#inv_lambda = 1 / lambda_cm
+
+# Solve by testing values
+for mu_P in np.linspace(0.82, 0.88, 10000):
+    #for mu_D in np.linspace(-0.3, 0.3, 10000):
+        lhs = wavelength
+        rhs = Rydberg * (1 / (3 - mu_P)**2 - (1 / (4 - 0)**2)) #from 4D to 3P
+        if abs(lhs - rhs) < 0.05:  # small error tolerance
+            print(f"mu_S ≈ {mu_S:.4f}, mu_P ≈ {mu_P:.4f}")
+            
+            
+#%% help example
+
+import numpy as np
+from scipy.optimize import brentq
+
+# Constants
+R = 1.097e7  # Rydberg constant in 1/m
+wavelength = 4979e-10  # Convert Å to meters
+
+# Transition: 4d -> 3p
+n_i = 4
+n_f = 3
+mu_f = 0.86  # estimated quantum defect for 3p
+
+# Function to solve for mu_i
+def rydberg_diffuse(mu_i):
+    lhs = 1 / wavelength
+    rhs = R * (1 / (n_f - mu_f)**2 - 1 / (n_i - mu_i)**2)
+    return lhs - rhs
+
+# Use brentq with a range of physically meaningful values (e.g. 0 to 0.1 for d orbital)
+mu_i = brentq(rydberg_diffuse, 0.0, 0.3)
+
+print(f"Quantum defect for 4d state (4979 Å): {mu_i:.5f}")
+
+
+#%% Example 2(plot?)
+
+import matplotlib.pyplot as plt
+
+mu_vals = np.linspace(0, 0.2, 500)
+f_vals = [rydberg_diffuse(mu) for mu in mu_vals]
+
+plt.plot(mu_vals, f_vals)
+plt.axhline(0, color='red', linestyle='--')
+plt.xlabel("Quantum Defect μ")
+plt.ylabel("f(μ)")
+plt.title("Root Finder Diagnostic")
+plt.grid(True)
+plt.show()
+
+
+#%% Principal Series Trial
+
+from scipy.optimize import fsolve
+import numpy as np
+
+# Constants
+R = 1.097e7  # Rydberg constant in 1/m
+wavelength = 5894e-10  # convert Å to meters
+n_i = 3  # initial level (3p)
+n_f = 3  # final level (3s)
+mu_f = 1.35  # estimated quantum defect for 3s
+
+
+
+for mu_S in np.linspace(1.2, 1.5, 1000):
+    for mu_P in np.linspace(0.75, 0.95, 1000):
+        lhs = wavelength
+        rhs = Rydberg * (1 / (3 - mu_S)**2 - 1 / (4 - mu_P)**2)
+        if abs(lhs - rhs) < 0.03:  # small error tolerance
+            print(f"mu_S ≈ {mu_S:.4f}, mu_P ≈ {mu_P:.4f}")
+
+
+
+
+# # Function to solve
+# def rydberg_principal(mu_i):
+#     left = 1 / wavelength
+#     right = R * (1 / (n_f - mu_f)**2 - 1 / (n_i - mu_i)**2)
+#     return left - right
+
+# # Solve
+# mu_i_guess = 0.9
+# mu_i = fsolve(rydberg_principal, mu_i_guess)[0]
+# print(f"Quantum defect for 3p (5894 Å): {mu_i:.4f}")
+
+#%%
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+# Load the data
+df4 = pd.read_csv("Third_Peak(HD - atmp3).csv")
+time = df4['Latest: Time (s)']
+voltage = df4['Latest: Potential 1 (V)']
+
+# Convert time to wavelength
+wavelength = (time * 25 / 60 + 7282) * 2 / 3
+
+# Define double Gaussian
+def double_gaussian(x, A1, mu1, sigma1, A2, mu2, sigma2, offset):
+    g1 = A1 * np.exp(-(x - mu1)**2 / (2 * sigma1**2))
+    g2 = A2 * np.exp(-(x - mu2)**2 / (2 * sigma2**2))
+    return g1 + g2 + offset
+
+# Initial guesses: [amp1, center1, width1, amp2, center2, width2, offset]
+p0 = [max(voltage), 4857.5, 0.2, max(voltage), 4858.6, 0.2, min(voltage)]
+
+# Fit the model
+popt, pcov = curve_fit(double_gaussian, wavelength, voltage, p0=p0)
+
+# Get fitted values
+fit_curve = double_gaussian(wavelength, *popt)
+
+# Plot
+plt.figure()
+plt.scatter(wavelength, voltage, label='Data', color='blue', s=10)
+plt.plot(wavelength, fit_curve, color='red', label='Double Gaussian Fit')
+plt.axvline(x=4857.53, color='black', linestyle='--', label='D-peak=4857.53Å')
+plt.axvline(x=4858.62, color='gold', linestyle='--', label='H-peak=4858.62Å')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Gaussian Fit to HD Peaks near 4861 Å')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Print fitted peak positions
+print(f"Deuterium peak center (mu1): {popt[1]:.4f} Å")
+print(f"Hydrogen peak center (mu2): {popt[4]:.4f} Å")
+
+#%%
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+# Load your data
+df6 = pd.read_csv("First_Peak(HD - atmp 3).csv")
+time = df6['Latest: Time (s)']
+voltage = df6['Latest: Potential 1 (V)']
+
+# Convert time to wavelength
+wavelength = (time * 1/6 + 6138) * 2/3
+
+# Define a single Gaussian function
+def gaussian(x, A, mu, sigma, offset):
+    return A * np.exp(-(x - mu)**2 / (2 * sigma**2)) + offset
+
+# Initial parameter guess: [amplitude, center, width, baseline]
+p0 = [max(voltage), wavelength[np.argmax(voltage)], 0.5, min(voltage)]
+
+# Fit the model
+popt, pcov = curve_fit(gaussian, wavelength, voltage, p0=p0)
+
+# Generate the fitted curve
+fit_curve = gaussian(wavelength, *popt)
+
+# Plot
+plt.figure()
+plt.scatter(wavelength, voltage, label='Data', color='blue', s=10)
+plt.plot(wavelength, fit_curve, color='red', label='Gaussian Fit')
+plt.axvline(x=4093.0, color='black', linestyle='--', label = 'D-peak=4093.0Å')
+plt.axvline(x=4094.29, color='gold', linestyle='--', label = "H-peak=4094.295Å")
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Gaussian Fit: First Peak (HD)')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Print the fitted peak parameters
+print(f"Peak center (wavelength): {popt[1]:.4f} Å")
+print(f"Amplitude: {popt[0]:.4f} V")
+print(f"Width (σ): {popt[2]:.4f} Å")
+print(f"Offset (baseline): {popt[3]:.4f} V")
+
+
+#%%
+
+S = (1.3165 +1.3421 + 1.3623 + 1.3628 +1.3712 )/5
+P = (0.7578 + 0.8172 + 0.8638 + 0.8626 + 0.8823)/5
+
+S1 = np.array([1.3165 ,1.3421 , 1.3623 , 1.3628 , 1.3712 ])
+P1 = np.array([0.7578 ,0.8172 , 0.8638 , 0.8626 ,0.8823])
+
+
+S_std = np.std(S1)
+P_std = np.std(P1)
+print(S_std)
+print(P_std)
+
+#%%
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+# Load the data
+df3 = pd.read_csv("Last_Peak(HD).csv")
+time = df3['Latest: Time (s)']
+voltage = df3['Latest: Potential 1 (V)']
+
+# Convert time to wavelength
+wavelength = (time * 5/6 + 9834.2) * 2/3
+
+# Define double Gaussian function
+def double_gaussian(x, A1, mu1, sigma1, A2, mu2, sigma2, offset):
+    g1 = A1 * np.exp(-(x - mu1)**2 / (2 * sigma1**2))
+    g2 = A2 * np.exp(-(x - mu2)**2 / (2 * sigma2**2))
+    return g1 + g2 + offset
+
+# Initial parameter guesses
+p0 = [
+    max(voltage), 6562.0, 0.5,  # First peak: amplitude, center, width
+    max(voltage), 6563.6, 0.5,  # Second peak
+    min(voltage)                # Offset
+]
+
+# Fit the data
+popt, pcov = curve_fit(double_gaussian, wavelength, voltage, p0=p0)
+
+# Extract peak positions from fit
+mu1, mu2 = popt[1], popt[4]
+
+# Generate fitted curve
+fit_curve = double_gaussian(wavelength, *popt)
+
+# Plotting
+plt.figure()
+plt.scatter(wavelength, voltage, label='Data', color='blue', s=10)
+plt.plot(wavelength, fit_curve, color='red', label='Double Gaussian Fit')
+plt.axvline(x=mu1, color='black', linestyle='--', label=f'Fitted Peak 1 = {mu1:.2f} Å')
+plt.axvline(x=mu2, color='gold', linestyle='--', label=f'Fitted Peak 2 = {mu2:.2f} Å')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Gaussian Fit to Last Peak (HD) near 6562.8 Å')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Print peak centers
+print(f"Fitted Peak 1 (possibly D): {mu1:.4f} Å")
+print(f"Fitted Peak 2 (possibly H): {mu2:.4f} Å")
+
+
+#%%
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.optimize import curve_fit
+
+# Load the data
+df4 = pd.read_csv("Third_Peak(HD - atmp3).csv")
+time = df4['Latest: Time (s)']
+voltage = df4['Latest: Potential 1 (V)']
+
+# Convert time to wavelength
+wavelength = (time * 25 / 60 + 7282) * 2 / 3  # Speed = 25 A/min
+
+# Define double Gaussian function
+def double_gaussian(x, A1, mu1, sigma1, A2, mu2, sigma2, offset):
+    g1 = A1 * np.exp(-(x - mu1)**2 / (2 * sigma1**2))
+    g2 = A2 * np.exp(-(x - mu2)**2 / (2 * sigma2**2))
+    return g1 + g2 + offset
+
+# Initial guess parameters
+p0 = [
+    max(voltage), 4857.5, 0.3,  # Peak 1 (D?)
+    max(voltage), 4858.6, 0.3,  # Peak 2 (H?)
+    min(voltage)                # Offset
+]
+
+# Fit the model
+popt, pcov = curve_fit(double_gaussian, wavelength, voltage, p0=p0)
+
+# Extract peak centers
+mu1, mu2 = popt[1], popt[4]
+
+# Generate fitted curve
+fit_curve = double_gaussian(wavelength, *popt)
+
+# Plotting
+plt.figure()
+plt.scatter(wavelength, voltage, label='Data', color='blue', s=10)
+plt.plot(wavelength, fit_curve, color='red', label='Double Gaussian Fit')
+plt.axvline(x=mu1, color='black', linestyle='--', label=f'Fitted Peak 1 = {mu1:.2f} Å')
+plt.axvline(x=mu2, color='gold', linestyle='--', label=f'Fitted Peak 2 = {mu2:.2f} Å')
+plt.xlabel('Wavelength (Å)')
+plt.ylabel('Potential (V)')
+plt.title('Gaussian Fit to Third Peak (HD) near 4861.3 Å')
+plt.grid(True)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Print fitted centers
+print(f"Fitted Peak 1: {mu1:.4f} Å")
+print(f"Fitted Peak 2: {mu2:.4f} Å")
+
